@@ -1,0 +1,38 @@
+name: Angular Build and Commit to Dist Folder
+
+on:
+  push:
+    branches:
+      - main  # Trigger on push to the main branch
+  pull_request:
+    branches:
+      - main  # Trigger on pull request to main branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'  # Use the version that your project requires
+
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Build Angular Project
+      run: npm run build -- --prod  # Use the build command for production
+
+    - name: Commit and Push dist to Repository
+      run: |
+        git config --global user.name "DraginSP2"
+        git config --global user.email "abhishekparihar1933@gmail.com"
+        git add dist/
+        git commit -m "Add Angular build output"
+        git push origin main
+      env:
+        GITHUB_TOKEN: ${{ secrets.TOKEN }}
