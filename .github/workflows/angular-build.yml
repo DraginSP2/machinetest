@@ -1,43 +1,37 @@
-name: Angular Build and Commit to Dist Folder
-
-on:
-  push:
-    branches:
-      - main  # Trigger on push to the main branch
-  pull_request:
-    branches:
-      - main  # Trigger on pull request to main branch
-
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
+      - name: Checkout the repository
+        uses: actions/checkout@v2
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'  # Use the version that your project requires
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'  # Update this as per your Angular project's requirements
 
-    - name: Install Dependencies
-      run: npm install
+      - name: Install dependencies
+        run: |
+          npm install  # Install project dependencies
 
-    - name: Build Angular Project
-      run: npm run build -- --configuration=production  # Updated build command
+      - name: Build Angular project
+        run: |
+          npm run build -- --prod  # Build the project for production
 
-    - name: Commit and push dist folder
-      run: |
-        git config --global user.name "DraginSP2"
-        git config --global user.email "abhishekparihar1933@gmail.com"
-        git add dist/  # Stage the dist folder
-        git commit -m "Add Angular build output" || echo "No changes to commit"
-        git push origin main -f  # Push the changes to the main branch
+      - name: Commit and push dist folder
+        run: |
+          git config --global user.name "DraginSP2"
+          git config --global user.email "abhishekparihar1933@gmail.com"
+          git add -f dist/  # Force adding the dist/ folder, even if it's ignored by .gitignore
+          git commit -m "Add Angular build output" || echo "No changes to commit"
+          git push origin main  # Push the changes to the main branch
 
-    - name: Clean up node_modules and dist from git
-      run: |
-        git rm -rf --cached node_modules/
-        git rm -rf --cached dist/
-      env:
-        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+      - name: Clean up node_modules and dist from git
+        run: |
+          git rm -rf --cached node_modules/
+          git rm -rf --cached dist/
+
+      - name: Verify push
+        run: |
+          echo "Push completed"
