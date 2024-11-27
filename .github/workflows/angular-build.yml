@@ -1,4 +1,4 @@
-name: Angular Build and Push
+name: Angular Build and Commit to Dist Folder
 
 on:
   push:
@@ -6,58 +6,33 @@ on:
       - main  # Trigger on push to the main branch
   pull_request:
     branches:
-      - main  # Trigger on pull request to the main branch
+      - main  # Trigger on pull request to main branch
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Checkout the repository
-    - name: Checkout code
+    - name: Checkout Repository
       uses: actions/checkout@v2
 
-    # Step 2: Set up Node.js environment
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '16'  # Set Node.js version to 16
+        node-version: '14'  # Use the version that your project requires
 
-    # Step 3: Install dependencies
-    - name: Install dependencies
+    - name: Install Dependencies
       run: npm install
 
-    # Step 4: Run the Angular build command
-    - name: Build Angular project
-      run: npm run build -- --configuration=production
+    - name: Build Angular Project
+      run: npm run build -- --configuration=production  # Updated build command
 
-    # Step 5: Check if dist directory exists and list its contents
-    - name: List dist directory contents
-      run: |
-        if [ -d "dist" ]; then
-          echo "Dist folder exists!"
-          ls -R dist/
-        else
-          echo "Dist folder does not exist!"
-        fi
-
-    # Step 6: Configure Git user for commit
-    - name: Set up Git user
-      run: |
-        git config --global user.name "DraginSP2"
-        git config --global user.email "abhishekparihar1933@gmail.com"
-
-    # Step 7: Commit and push the dist folder to the repository
     - name: Commit and Push dist to Repository
       run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "github-actions@github.com"
         git add dist/
         git commit -m "Add Angular build output"
         git push origin main
       env:
         GITHUB_TOKEN: ${{ secrets.TOKEN }}
-
-    # Step 8: Clean up orphan processes (Optional)
-    - name: Clean up orphan processes
-      run: |
-        echo "Cleaning up..."
-        # Additional cleanup commands can be added here if needed
